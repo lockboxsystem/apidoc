@@ -1,0 +1,15 @@
+{
+  "name": "lockbox-apidoc",
+  "version": "1.0.0",
+  "description": "Documentation for Lockbox API",
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-apidoc": "~0.7.0"
+  },
+  "author": "Matthias Lill",
+  "license": "licensename",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Lockboxsystem/apidoc.git"
+  }
+}
