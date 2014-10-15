@@ -6,7 +6,12 @@
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad request
  *     {
- *       "error": "Missing API key"
+ *        "errors":[
+ *           {
+ *               "title" : "Missing API-Key",
+ *               "status": "400",
+ *           }
+ *       ]
  *     }
  */
 
@@ -18,7 +23,12 @@
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 400 Bad request
  *     {
- *       "error": "Missing function"
+ *       "errors":[
+ *           {
+ *               "title" : "Missing function",
+ *               "status": "400",
+ *           }
+ *       ]
  *     }
  */
 
@@ -73,27 +83,28 @@
  * @apiErrorTitle (CustomerNotFound) Es konnte kein Kunde gefunden werden.
  * @apiErrorStructure AccessError
  * @apiErrorStructure FunctionError
- * @apiError (CustomerNotFound) anchor_nr_empty Missing anchor number.
- * @apiError (CustomerNotFound) anchor_nr_incorrect Anchor number not found.
- * @apiError (CustomerNotFound) anchor_nr_wrong No customer found.
+ * @apiError (Error 400) anchor_nr Missing anchor number.
+ * @apiError (Error 404) anchor_nr Anchor number not found or Customer not found.
  *
  * @apiErrorExample Error-Response:
- *     HTTP/1.1 400 Bad request
+ *     HTTP/1.1 404 Not found
  *     {
- *       "error": "No customer found",
- *       "code": "400"
+ *       "errors":[
+ *           {
+ *               "title" : "No Customer found",
+ *               "status": "404",
+ *           }
+ *       ]
  *     }
  */
 
 /**
- * @api {get} /delivery/list/:filter Sendungen
+ * @api {get} /delivery/list Sendungen
  * @apiName GetDeliveries
  * @apiGroup Delivery
  * @apiVersion 1.0.0
  * @apiPermission apikey
- * @apiDescription Liefert eine Liste von Sendungen zurück die dem ServiceProvider zugewiesen sind oder erstellt wurden. Die Ausgabe ist auf maximal 100 Sendungen beschränkt.
- *
- * @apiParam {string} [filter] Filtert das Ergebniss vor. Mögliche Werte sind nodriver, deliver, failure, sent, tour, pickup
+ * @apiDescription Liefert eine Liste der noch nicht zugestellten Sendungen zurück die dem ServiceProvider zugewiesen sind oder erstellt wurden. Die Ausgabe ist auf maximal 100 Sendungen beschränkt. Weitere Filteroptionen werden folgen.
  *
  * @apiSuccess {Object[]} Deliveries Rückgabe eines Arrays mit Delivery Objekten wie in /deliveries/item beschrieben.
  *
@@ -199,12 +210,12 @@
  * Bei erfolgreichem Anlegen einer Sendung wird das Delivery Obejct wie oben beschrieben zurückgegeben.
  *
  * @apiParam {String} anchor_nr Ankernummer in der Form a123, A123 oder A00123
- * @apiParam {Number} reference Referenz Nummer aus dem eigenen System. Auch als String möglich. Wird auf dem Label abgebildet wenn vorhanden.
+ * @apiParam {Number} [reference] Referenz Nummer aus dem eigenen System. Auch als String möglich. Wird auf dem Label abgebildet als Barcode bei numerischen Werten oder die ersten 20-Zeichen bei Text.
  * @apiParam {Object[]} boxes Verwendeten Boxen
  * @apiParam {String} boxes.type Box Type (z.B.: m,l,xl,thermo)
- * @apiParam {Date} [date_start] Ob welchem Datum die Sendung abgeholt werden kann. Dies erlaubt es Sendungen in der Zukunft zu erstellen um das Label im internen Prozess zu verwenden. In der Form Y-m-d.
+ * @apiParam {Date} [date_start] Ob welchem Datum die Sendung abgeholt werden kann. Dies erlaubt es Sendungen in der Zukunft zu erstellen um das Label im internen Prozess zu verwenden. In der Form Y-m-d. Ohne vorgegebenes Datum wird die Sendung als sofort verfügbar erstellt.
  *
- * @apiSuccess {Object[]} Delivery wie in /delivery/item/:id beschrieben
+ * @apiSuccess (Success 204) {Object[]} Delivery wie in /delivery/item/:id beschrieben
  *
  * @apiError anchor_nr Ankernummer unbekannt oder falsch
  * @apiError date_start Datum falsch formartiert

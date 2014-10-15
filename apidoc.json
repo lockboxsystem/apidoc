@@ -1,7 +1,13 @@
 {
-  "name": "Lockbox REST API",
+  "name": "Lockbox RESTful API",
   "version": "1.0.0",
-  "description": "Die Lockbox API ermöglicht es Informationen zu Kunden und Sendungen direkt und einfach abzufragen.",
+  "description": "Anbindung an das Lockbox LTS.",
   "title": "Lockbox RESTful API V1",
-  "url" : "http://api.lockboxsystem.com/v1"
+  "url" : "http://api.lockboxsystem.com/v1",
+  "header" : {
+  	"filename" : "src/api_header.md"
+  },
+  "footer" : {
+  	"filename" : "src/api_footer.md"
+  }
 }
