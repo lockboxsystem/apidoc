@@ -6,11 +6,11 @@ Zu jeder Anfrage an unsere API muss der API-Key aus dem ServiceProvider-Konto al
 
 Beispiel
 
-    http://api.lockboxsystem.com/v1/customer/anchor/a123?apikey=abcdef....
+    https://api.lockboxsystem.com/v1/customer/anchor/a123?apikey=abcdef....
 
 ## Testen
 
-Zum Testen einer Funktion kannst du diese an eine alternative Basisadresse absenden. Nutze dafür die Adresse `http://apitest.lockboxsystem.com/v1` zusammen mit dem normalen API-Key. Alle Anfragen an dieses System werden regulär verarbeitet aber erstellte Sendungen ggf. nach einer unbestimmten Zeit wieder verworfen.
+Zum Testen einer Funktion kannst du diese an eine alternative Basisadresse absenden. Nutze dafür die Adresse `http://api.lckbx.de/v1` zusammen mit dem normalen API-Key. Alle Anfragen an dieses System werden regulär verarbeitet aber erstellte Sendungen ggf. nach einer unbestimmten Zeit wieder verworfen.
 
 ## Versionierung
 
