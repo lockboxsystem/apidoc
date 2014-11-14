@@ -132,6 +132,7 @@
  * @apiSuccess {String} Delivery.boxes.type Type einer Box (z.B.: m,l,xl,thermo)
  * @apiSuccess {String} Delivery.reference Referenz Nummer. Ist auf dem Label abgedruckt. Entweder die ersten 20-Zeichen oder als Barcode bei 12-stelligen numerischen Wert.
  * @apiSuccess {Date} Delivery.date_start Datum an welchem die Sendung zur Auslieferung bereit ist.
+ * @apiSuccess {Time} Delivery.delivery_time Zustell-Zeitfenster
  * @apiSuccess {Object[]} Delivery.tracking_events
  * @apiSuccess {string} Delivery.tracking_events.status Status
  * @apiSuccess {string} Delivery.tracking_events.details Beschreibung
@@ -143,9 +144,12 @@
  *      {
  *          Delivery: {
  *              id: "543ced73-fddc-47d9-af01-04ddfb6fadfa"
+ *              href: "https://api.lockboxsystem.com/v1/delivery/item/543ced73-fddc-47d9-af01-04ddfb6fadfa"
  *              anchor_nr: "A00123"
+ *              customer_nr: "12345678"
  *              tracking_nr: "000079792"
- *              label_url: "http://api.lockboxsystem.com/v1/delivery/label/543ced73-fddc-47d9-af01-04ddfb6fadfa.pdf"
+ *              tracking_url: "https://www.lockboxsystem.com/track?nr=000079792&zip=10117"
+ *              label_url: "https://api.lockboxsystem.com/v1/delivery/label/543ced73-fddc-47d9-af01-04ddfb6fadfa.pdf"
  *              status: "DeliveryCreated"
  *              boxes: [
  *                  {
@@ -177,6 +181,7 @@
  *              from_city: ""
  *              from_country: "DE"
  *              date_start: "2014-10-16"
+ *              delivery_time: "18:00:00"
  *              tracking_events: [
  *                  {
  *                      status: "BoxDelivery.DeliveryCreated"
@@ -205,20 +210,31 @@
  * @apiGroup Delivery
  * @apiVersion 1.0.0
  * @apiPermission apikey
- * @apiDescription Eine neue Sendung wird im System angelegt. Empfänger von Sendungen können ausschließlich Lockbox Kunden sein.
+ * @apiDescription Eine neue Sendung wird im System angelegt. Das angeben einer Empfänger-Adresse ist optional. Für Lieferungen an existierende Lockbox-Kunden wird nur die Ankernummer benötigt. 
  * Der Absender der Sendung wird über den API-Key automatisch ermittelt. Aufruf gibt Fehlermeldungen wenn die Erstellung der Sendung nicht erfolgreich war.
  * Bei erfolgreichem Anlegen einer Sendung wird das Delivery Obejct wie oben beschrieben zurückgegeben.
  *
- * @apiParam {String} anchor_nr Ankernummer in der Form a123, A123 oder A00123
- * @apiParam {Number} [reference] Referenz Nummer aus dem eigenen System. Auch als String möglich. Wird auf dem Label abgebildet als Barcode bei numerischen Werten oder die ersten 20-Zeichen bei Text.
  * @apiParam {Object[]} boxes Verwendeten Boxen
  * @apiParam {String} boxes.type Box Type (z.B.: m,l,xl,thermo)
+ * @apiParam {String} [anchor_nr] Ankernummer in der Form a123, A123 oder A00123
+ * @apiParam {String} [to_first_name] Vorname
+ * @apiParam {String} [to_last_name] Nachname
+ * @apiParam {String} [to_company] Firma
+ * @apiParam {String} [to_steet] Straße
+ * @apiParam {String} [to_streetnumber] Hausnummer
+ * @apiParam {String} [to_zip_code] Postleitzahl
+ * @apiParam {String} [to_city] Stadt
+ * @apiParam {String} [to_country] Land (Möglich gerade: deu, aut)
+ * @apiParam {String} [to_email] Wenn eine Ankernummer gegeben aber ungebekannt ist wird ein neuer Kunde angelegt. In diesem Fall werden to_first_name, to_last_name, to_street, to_streetnumber, to_zip_code, to_city, to_country und to_email zum Plfichtfeld.
+ * @apiParam {Number} [reference] Referenz Nummer aus dem eigenen System. Auch als String möglich. Wird auf dem Label abgebildet als Barcode bei numerischen Werten oder die ersten 20-Zeichen bei Text.
  * @apiParam {Date} [date_start] Ob welchem Datum die Sendung abgeholt werden kann. Dies erlaubt es Sendungen in der Zukunft zu erstellen um das Label im internen Prozess zu verwenden. In der Form Y-m-d. Ohne vorgegebenes Datum wird die Sendung als sofort verfügbar erstellt.
+ * @apiParam {Time} [delivery_time] Gewünschte Zustellung zur genannten Uhrzeit. Zeitraum +2 Stunden. Gilt nur für Empfänger ohne Lockbox-Anker. In der Form H:i:s. Dieses Feld wird Pflicht wenn keine Ankernummer angegeben wurde.
  *
  * @apiSuccess (Success 204) {Object[]} Delivery wie in /delivery/item/:id beschrieben
  *
  * @apiError anchor_nr Ankernummer unbekannt oder falsch
  * @apiError date_start Datum falsch formartiert
+ * @apiError delivery_time Zustell-Zeitfenster Uhrzeit falsch formartiert
  * @apiError boxes Keine Boxen angeben, nicht als Array oder mehr als 9
  * @apiError boxes.type Der gegebene Type ist nicht bekannt
  *
