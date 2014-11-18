@@ -210,21 +210,22 @@
  * @apiGroup Delivery
  * @apiVersion 1.0.0
  * @apiPermission apikey
- * @apiDescription Eine neue Sendung wird im System angelegt. Das angeben einer Empfänger-Adresse ist optional. Für Lieferungen an existierende Lockbox-Kunden wird nur die Ankernummer benötigt. 
+ * @apiDescription Eine neue Sendung wird im System angelegt. Das angeben einer Empfänger-Adresse ist optional wenn eine Ankernummer angegeben wurde. Für Lieferungen an nicht Lockbox-Kunden mit Anker muss die vollständige Adresse gesendet werden. 
  * Der Absender der Sendung wird über den API-Key automatisch ermittelt. Aufruf gibt Fehlermeldungen wenn die Erstellung der Sendung nicht erfolgreich war.
  * Bei erfolgreichem Anlegen einer Sendung wird das Delivery Obejct wie oben beschrieben zurückgegeben.
  *
- * @apiParam {Object[]} boxes Verwendeten Boxen
- * @apiParam {String} boxes.type Box Type (z.B.: m,l,xl,thermo)
+ * @apiParam {Object[]} [boxes] Verwendeten Boxen, Boxen können aktuell nur über das LTS zu einer Sendung später hinzugefügt werden.
+ * @apiParam {String} [boxes.type] Box Type (z.B.: m,l,xl,thermo)
  * @apiParam {String} [anchor_nr] Ankernummer in der Form a123, A123 oder A00123
  * @apiParam {String} [to_first_name] Vorname
  * @apiParam {String} [to_last_name] Nachname
  * @apiParam {String} [to_company] Firma
- * @apiParam {String} [to_steet] Straße
+ * @apiParam {String} [to_street] Straße
  * @apiParam {String} [to_streetnumber] Hausnummer
  * @apiParam {String} [to_zip_code] Postleitzahl
  * @apiParam {String} [to_city] Stadt
  * @apiParam {String} [to_country] Land (Möglich gerade: deu, aut)
+ * @apiParam {String} [to_additional_info] Addresszusatz
  * @apiParam {String} [to_email] Wenn eine Ankernummer gegeben aber ungebekannt ist wird ein neuer Kunde angelegt. In diesem Fall werden to_first_name, to_last_name, to_street, to_streetnumber, to_zip_code, to_city, to_country und to_email zum Plfichtfeld.
  * @apiParam {Number} [reference] Referenz Nummer aus dem eigenen System. Auch als String möglich. Wird auf dem Label abgebildet als Barcode bei numerischen Werten oder die ersten 20-Zeichen bei Text.
  * @apiParam {Date} [date_start] Ob welchem Datum die Sendung abgeholt werden kann. Dies erlaubt es Sendungen in der Zukunft zu erstellen um das Label im internen Prozess zu verwenden. In der Form Y-m-d. Ohne vorgegebenes Datum wird die Sendung als sofort verfügbar erstellt.
