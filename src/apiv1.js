@@ -50,7 +50,7 @@
  * @apiSuccess {Object[]} Customer
  * @apiSuccess {String} Customer.customer_nr Kundennummer
  * @apiSuccess {String} Customer.anchor_nr Ankernummer
- * @apiSuccess {Number} Customer.foa Anrede, 0 für Frau, 1 für Herr
+ * @apiSuccess {Number} Customer.foa Anrede, "female" für Frau, "male" für Herr oder leer
  * @apiSuccess {String} Customer.first_name Vorname
  * @apiSuccess {String} Customer.last_name Nachname
  * @apiSuccess {String} Customer.company Firma
@@ -60,6 +60,8 @@
  * @apiSuccess {Number} Customer.zip_code Postleitzahl
  * @apiSuccess {String} Customer.city Stadt
  * @apiSuccess {String} Customer.country Land, ISO 3166-1 alpha-2 code
+ * @apiSuccess {String} Customer.phone Mobilnummer
+ * @apiSuccess {String} Customer.email E-Mail-Adresse
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -67,9 +69,10 @@
  *           Customer: {
  *              customer_nr: "12345678"
  *              anchor_nr: "A00123"
- *              foa: "1"
+ *              foa: "male"
+ *              salutation: "Dr."
  *              first_name: "Max"
- *              last_name: "Musterman"
+ *              last_name: "Mustermann"
  *              company: ""
  *              street: "Musterstr."
  *              streetnumber: "66"
@@ -77,6 +80,8 @@
  *              zip_code: "10117"
  *              city: "Berlin"
  *              country: "DE"
+ *              phone: "012345678"
+ *              email: "max@mustermann.de"
  *          }
  *      }
  *
@@ -123,14 +128,43 @@
  *
  * @apiSuccess {Object[]} Delivery
  * @apiSuccess {String} Delivery.id Sendungs ID mit 36-Zeichen
+ * @apiSuccess {String} Delivery.href API-Url zur Sendung
  * @apiSuccess {String} Delivery.anchor_nr Ankernummer der Sendung
+ * @apiSuccess {String} Delivery.customer_nr Kundennummer
  * @apiSuccess {Number} Delivery.tracking_nr Sendungsnummer zur Verfolgung
+ * @apiSuccess {Number} Delivery.label_url Url zum PDF-Label
  * @apiSuccess {String} Delivery.status Aktueller Status der Sendung
  * @apiSuccess {String} Delivery.label_url Abfrage des Labels als PDF-Datei
  * @apiSuccess {Object[]} Delivery.boxes
  * @apiSuccess {Number} Delivery.boxes.box_nr Nummer einer einzelnen Box
  * @apiSuccess {String} Delivery.boxes.type Type einer Box (z.B.: m,l,xl,thermo)
  * @apiSuccess {String} Delivery.reference Referenz Nummer. Ist auf dem Label abgedruckt. Entweder die ersten 20-Zeichen oder als Barcode bei 12-stelligen numerischen Wert.
+ * @apiSuccess {String} Delivery.to_company 
+ * @apiSuccess {String} Delivery.to_foa 
+ * @apiSuccess {String} Delivery.to_salutation 
+ * @apiSuccess {String} Delivery.to_first_name 
+ * @apiSuccess {String} Delivery.to_last_name 
+ * @apiSuccess {String} Delivery.to_street 
+ * @apiSuccess {String} Delivery.to_streetnumber
+ * @apiSuccess {String} Delivery.to_additional_info
+ * @apiSuccess {String} Delivery.to_zip_code
+ * @apiSuccess {String} Delivery.to_city
+ * @apiSuccess {String} Delivery.to_country
+ * @apiSuccess {String} Delivery.to_phone
+ * @apiSuccess {String} Delivery.to_email
+ * @apiSuccess {String} Delivery.from_company
+ * @apiSuccess {String} Delivery.from_foa
+ * @apiSuccess {String} Delivery.from_salutation
+ * @apiSuccess {String} Delivery.from_first_name
+ * @apiSuccess {String} Delivery.from_last_name
+ * @apiSuccess {String} Delivery.from_street
+ * @apiSuccess {String} Delivery.from_streetnumber
+ * @apiSuccess {String} Delivery.from_additional_info
+ * @apiSuccess {String} Delivery.from_zip_code
+ * @apiSuccess {String} Delivery.from_city
+ * @apiSuccess {String} Delivery.from_country
+ * @apiSuccess {String} Delivery.from_phone
+ * @apiSuccess {String} Delivery.from_email
  * @apiSuccess {Date} Delivery.date_start Datum an welchem die Sendung zur Auslieferung bereit ist.
  * @apiSuccess {Time} Delivery.delivery_time Zustell-Zeitfenster
  * @apiSuccess {Object[]} Delivery.tracking_events
@@ -163,6 +197,8 @@
  *              ]
  *              reference: "1234215"
  *              to_company: ""
+ *              to_foa: "male"
+ *              to_salutation: "Dr."
  *              to_firt_name: "Max"
  *              to_last_name: "Mustermann"
  *              to_street: "Musterstraße"
@@ -172,6 +208,8 @@
  *              to_city: "Berlin"
  *              to_country: "DE"
  *              from_company: "Shopname"
+ *              from_foa: ""
+ *              from_salutation: ""
  *              from_firt_name: ""
  *              from_last_name: ""
  *              from_street: ""
@@ -217,6 +255,8 @@
  * @apiParam {Object[]} [boxes] Verwendeten Boxen, Boxen können aktuell nur über das LTS zu einer Sendung später hinzugefügt werden.
  * @apiParam {String} [boxes.type] Box Type (z.B.: m,l,xl,thermo)
  * @apiParam {String} [anchor_nr] Ankernummer in der Form a123, A123 oder A00123
+ * @apiParam {String} [to_foa] Anrede, "female" = Frau, "male" = Herr oder leer
+ * @apiParam {String} [to_salutation] Titel
  * @apiParam {String} [to_first_name] Vorname
  * @apiParam {String} [to_last_name] Nachname
  * @apiParam {String} [to_company] Firma
@@ -226,9 +266,10 @@
  * @apiParam {String} [to_city] Stadt
  * @apiParam {String} [to_country] Land (Möglich gerade: deu, aut)
  * @apiParam {String} [to_additional_info] Addresszusatz
- * @apiParam {String} [to_email] Wenn eine Ankernummer gegeben aber ungebekannt ist wird ein neuer Kunde angelegt. In diesem Fall werden to_first_name, to_last_name, to_street, to_streetnumber, to_zip_code, to_city, to_country und to_email zum Plfichtfeld.
+ * @apiParam {String} [to_phone] Mobil oder Telefonnummer für Rückfragen
+ * @apiParam {String} [to_email] Wenn eine Ankernummer gegeben aber unbekannt ist wird ein neuer Kunde angelegt. In diesem Fall werden to_first_name, to_last_name, to_street, to_streetnumber, to_zip_code, to_city, to_country und to_email zum Plfichtfeld.
  * @apiParam {Number} [reference] Referenz Nummer aus dem eigenen System. Auch als String möglich. Wird auf dem Label abgebildet als Barcode bei numerischen Werten oder die ersten 20-Zeichen bei Text.
- * @apiParam {Date} [date_start] Ob welchem Datum die Sendung abgeholt werden kann. Dies erlaubt es Sendungen in der Zukunft zu erstellen um das Label im internen Prozess zu verwenden. In der Form Y-m-d. Ohne vorgegebenes Datum wird die Sendung als sofort verfügbar erstellt.
+ * @apiParam {Date} [date_start] Ab welchem Datum die Sendung abgeholt werden kann. Dies erlaubt es Sendungen in der Zukunft zu erstellen um das Label im internen Prozess zu verwenden. In der Form Y-m-d. Ohne vorgegebenes Datum wird die Sendung als sofort verfügbar erstellt.
  * @apiParam {Time} [delivery_time] Gewünschte Zustellung zur genannten Uhrzeit. Zeitraum +2 Stunden. Gilt nur für Empfänger ohne Lockbox-Anker. In der Form H:i:s. Dieses Feld wird Pflicht wenn keine Ankernummer angegeben wurde.
  *
  * @apiSuccess (Success 204) {Object[]} Delivery wie in /delivery/item/:id beschrieben
@@ -236,8 +277,9 @@
  * @apiError anchor_nr Ankernummer unbekannt oder falsch
  * @apiError date_start Datum falsch formartiert
  * @apiError delivery_time Zustell-Zeitfenster Uhrzeit falsch formartiert
- * @apiError boxes Keine Boxen angeben, nicht als Array oder mehr als 9
+ * @apiError boxes Nicht als Array oder mehr als 9
  * @apiError boxes.type Der gegebene Type ist nicht bekannt
+ * @apiError to_country Das Land ist unbekannt
  *
  */
 

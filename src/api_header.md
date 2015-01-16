@@ -14,4 +14,4 @@ Zum Testen einer Funktion kannst du diese an eine alternative Basisadresse absen
 
 ## Versionierung
 
-Neuerungen an der API sind nicht ausgeschlossen. Dabei wird stets darauf geachtet, dass vorherige Versionen weiterhin ohne Beeinträchtigung funktionieren. Diese Dokumentation ist auf GitHub (https://github.com/lockboxsystem/apidoc) verfügbar und für Benachrichtigungen über Veränderungen verfolgt werden.
+Neuerungen an der API sind nicht ausgeschlossen. Dabei wird stets darauf geachtet, dass vorherige Versionen weiterhin ohne Beeinträchtigung funktionieren. Diese Dokumentation ist auf GitHub (https://github.com/lockboxsystem/apidoc) verfügbar und kann für Benachrichtigungen über Veränderungen dort beobachtet werden.
