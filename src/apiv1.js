@@ -295,3 +295,81 @@
  *
  * @apiSuccess {PDF} Label Ausgabe einer PDF-Datei
  */
+
+
+ /**
+ * @api {get} /box/item/:box_nr Box abfragen
+ * @apiName GetDeliveryBoxNr
+ * @apiGroup DeliveryBoxes
+ * @apiVersion 1.0.1
+ * @apiPermission apikey
+ * @apiDescription Gibt Informationen zu einer Box einer Sendung aus
+ *
+ * @apiParam {string} box_nr Box Nummer
+ *
+ * @apiSuccess {Object[]} Box
+ * @apiSuccess {String} Box.box_nr Box Nummer
+ * @apiSuccess {String} Box.delivery_id ID der Sendung
+ * @apiSuccess {String} Box.type Box Type
+ * @apiSuccess {String} Box.description Beschreibung der Box
+ * @apiSuccess {Boolean} Box.is_in_a_box Diese Box befindet sich in einer anderen Box. Dies bedeutet das kein Label existiert.
+ * @apiSuccess {String} Box.label_url Label der einzelnen Box
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *           Box: {
+ *              delivery_id: "54bfcbe0-c930-4811-9615-03f2fb6fadfa"
+ *              box_nr: "0000382932"
+ *              type: "s"
+ *              description: "Small"
+ *              is_in_a_box: false
+ *              label_url: "https://api.lockboxsystem.com/v1/box/label/0000382932.pdf"
+ *          }
+ *      }
+ *
+ * @apiErrorTitle (BoxNotFound) Die Box konnte nicht gefunden werden.
+ * @apiErrorStructure AccessError
+ * @apiErrorStructure FunctionError
+ * @apiError (Error 400) box_nr Keine Box Nummer angegeben.
+ */
+
+ /**
+ * @api {post} /box/item Box anlegen
+ * @apiName AddDeliveryBox
+ * @apiGroup DeliveryBoxes
+ * @apiVersion 1.0.1
+ * @apiPermission apikey
+ * @apiDescription Fügt eine Box einer Sendung hinzu. 
+ *
+ * @apiParam {string} delivery_id Sendungsnummer
+ * @apiParam {string} type Box Type
+ *
+ * @apiSuccess {Object[]} Box Wie in /box/item/:box_nr beschrieben
+ *
+ * @apiErrorTitle (BoxTypeNotFound) Box Type wurde nicht gefunden
+ * @apiErrorTitle (DeliveryNotFound) Die Sendung wurde nicht gefunden.
+ * @apiErrorStructure AccessError
+ * @apiErrorStructure FunctionError
+ */
+
+ /**
+ * @api {delete} /box/item/:box_nr Box entfernen
+ * @apiName DeleteDeliveryBoxNr
+ * @apiGroup DeliveryBoxes
+ * @apiVersion 1.0.1
+ * @apiPermission apikey
+ * @apiDescription Entfernt eine bereits hinzugefügte Box. Aktuell ist ist nur möglich die letzte Box zu entfernen da diese für alle Labels durchnummeriert sind.
+ *
+ * @apiParam {string} box_nr Box Nummer
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 204 No Content
+ *
+ * @apiErrorStructure AccessError
+ * @apiErrorStructure FunctionError
+ * @apiError (Error 400) box_nr Keine box_nr angegeben.
+ * @apiError (Error 400) BoxNotFound Die box_nr konnte nicht gefunden werden.
+ * @apiError (Error 400) DeliveryPickedup Die Sendung wurde bereits eingeladen und kann nicht mehr verändert werden.
+ * @apiError (Error 400) BoxLast Es wurde nicht die letzte Box entfernt.
+ */

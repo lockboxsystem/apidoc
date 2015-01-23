@@ -1,6 +1,6 @@
 {
   "name": "Lockbox RESTful API",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Anbindung an das Lockbox LTS.",
   "title": "Lockbox RESTful API V1",
   "url" : "https://api.lockboxsystem.com/v1",
