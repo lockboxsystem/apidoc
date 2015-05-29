@@ -38,7 +38,7 @@
  */
 
 /**
- * @api {get} /customer/anchor/:anchor_nr Kunde abfragen
+ * @api {get} /customer/anchor/:anchor_nr Ankernummer abfragen
  * @apiName GetCustomerByAnchor
  * @apiGroup Customer
  * @apiVersion 1.0.0
@@ -51,6 +51,7 @@
  * @apiSuccess {String} Customer.customer_nr Kundennummer
  * @apiSuccess {String} Customer.anchor_nr Ankernummer
  * @apiSuccess {Number} Customer.foa Anrede, "female" für Frau, "male" für Herr oder leer
+ * @apiSuccess {String} Customer.salutation Titel
  * @apiSuccess {String} Customer.first_name Vorname
  * @apiSuccess {String} Customer.last_name Nachname
  * @apiSuccess {String} Customer.company Firma
@@ -102,6 +103,108 @@
  *       ]
  *     }
  */
+
+/**
+ * @api {get} /customer/item/:customer_nr Kunden abfragen
+ * @apiName GetCustomer
+ * @apiGroup Customer
+ * @apiVersion 1.0.2
+ * @apiPermission apikey
+ * @apiDescription Gibt Informationen zu einem bei Lockbox registrierten Kunden aus.
+ *
+ * @apiParam {Number} customer_nr Kundennummer des Kunden.
+ *
+ * @apiSuccess {Object[]} Customer
+ * @apiSuccess {String} Customer.customer_nr Kundennummer
+ * @apiSuccess {String} Customer.anchor_nr Ankernummer
+ * @apiSuccess {Number} Customer.foa Anrede, "female" für Frau, "male" für Herr oder leer
+ * @apiSuccess {String} Customer.salutation Titel
+ * @apiSuccess {String} Customer.first_name Vorname
+ * @apiSuccess {String} Customer.last_name Nachname
+ * @apiSuccess {String} Customer.company Firma
+ * @apiSuccess {String} Customer.street Straße
+ * @apiSuccess {String} Customer.streetnumber Hausnummer 
+ * @apiSuccess {String} Customer.additional_info Adresszusatz, Etage, Eingang
+ * @apiSuccess {Number} Customer.zip_code Postleitzahl
+ * @apiSuccess {String} Customer.city Stadt
+ * @apiSuccess {String} Customer.country Land, ISO 3166-1 alpha-2 code
+ * @apiSuccess {String} Customer.phone Mobilnummer
+ * @apiSuccess {String} Customer.email E-Mail-Adresse
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *           Customer: {
+ *              customer_nr: "12345678"
+ *              anchor_nr: "A00123"
+ *              foa: "male"
+ *              salutation: "Dr."
+ *              first_name: "Max"
+ *              last_name: "Mustermann"
+ *              company: ""
+ *              street: "Musterstr."
+ *              streetnumber: "66"
+ *              additional_info: null
+ *              zip_code: "10117"
+ *              city: "Berlin"
+ *              country: "DE"
+ *              phone: "012345678"
+ *              email: "max@mustermann.de"
+ *          }
+ *      }
+ *
+ * @apiErrorTitle (CustomerNotFound) Es konnte kein Kunde gefunden werden.
+ * @apiErrorStructure AccessError
+ * @apiErrorStructure FunctionError
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not found
+ *     {
+ *       "errors":[
+ *           {
+ *               "title" : "No Customer found",
+ *               "status": "404",
+ *           }
+ *       ]
+ *     }
+ */
+
+/**
+ * @api {post} /customer/item Kunden anlegen
+ * @apiName AddCustomer
+ * @apiGroup Customer
+ * @apiVersion 1.0.2
+ * @apiPermission apikey
+ * @apiDescription Erstellt einen neuen Endkunden im System.
+ *
+ * @apiParam {String} email Email Adresse des Kunden.
+ * @apiParam {String} [password] Passwort ist optional. Wenn leer wird automatisch eines generiert beim Anker anlegen.
+ * @apiParam {String} [company] Firma
+ * @apiParam {String} [foa] Anrede, "female" = Frau, "male" = Herr oder leer
+ * @apiParam {String} [salutation] Titel
+ * @apiParam {String} [first_name] Vorname
+ * @apiParam {String} last_name Nachname
+ * @apiParam {String} [street] Straße
+ * @apiParam {String} [streetnumber] Hausnummer
+ * @apiParam {String} [zip_code] Postleitzahl
+ * @apiParam {String} [city] Stadt
+ * @apiParam {String} [birthday] Geburstag in der Form Y-m-d
+ * @apiParam {String} [country] Land (Möglich gerade: deu, aut)
+ * @apiParam {String} [additional_info] Addresszusatz
+ * @apiParam {String} [phone] Mobil oder Telefonnummer für Rückfragen
+ * @apiParam {String} [phone_code] Telefonnummer Vorwahl
+ * @apiParam {String} [anchor_delivery_date] Ankerliefertermin als Tag im Format Y-m-d
+ * @apiParam {String} [anchor_delivery_time] Ankerliefertermin als Uhrzeit im Format H:i:s
+ *
+ * @apiSuccess (Success 204) {Object[]} Customer wie in /customer/item/:customer_nr beschrieben
+ *
+ * @apiError anchor_delivery_date Datum falsch formartiert
+ * @apiError anchor_delivery_time Uhrzeit falsch formartiert
+ * @apiError country Das Land ist unbekannt
+ * @apiError last_name Kein Nachname angegeben
+ *
+ */
+
 
 /**
  * @api {get} /delivery/list Sendungen
