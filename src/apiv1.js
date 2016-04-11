@@ -274,7 +274,7 @@
  * @apiSuccess {string} Delivery.tracking_events.status Status
  * @apiSuccess {string} Delivery.tracking_events.details Beschreibung
  * @apiSuccess {Date} Delivery.tracking_events.created Datum
- * @apiSuccess {Object[]} ChildDelivery1-n Beim Überschreiten der Maximalanzahl an Boxen pro Sendung werden 1-n Children-Deliveries erzeugt
+ * @apiSuccess {Object[]} ChildDeliveries Beim Überschreiten der Maximalanzahl an Boxen pro Sendung werden n Child-Deliveries erzeugt
  *
  * @apiSuccessExample Success-Responce:
  *
@@ -338,12 +338,9 @@
  *              ]
  *              created: "2014-10-14T11:31:31+02:00"
  *          }
- *          ChildDelivery1: {
- *				entspricht Delivery-Object
- *          }
- *          ChildDeliveryn: {
- *				entspricht Delivery-Object
- *          }
+ *          ChildDeliveries: [{
+ *				Delivery-Object
+ *          }]
  *      }
  *
  *
