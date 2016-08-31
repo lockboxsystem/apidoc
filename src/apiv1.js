@@ -173,9 +173,9 @@
  * @api {post} /customer/item Kunden anlegen
  * @apiName AddCustomer
  * @apiGroup Customer
- * @apiVersion 1.0.2
+ * @apiVersion 1.0.3
  * @apiPermission apikey
- * @apiDescription Erstellt einen neuen Endkunden im System.
+ * @apiDescription Erstellt einen neuen Endkunden im System. Wenn die E-Mail-Adresse bereits im System registriert ist, wird der Kunde ohne Veränderung zurückgegeben.
  *
  * @apiParam {String} email Email Adresse des Kunden.
  * @apiParam {String} [password] Passwort ist optional. Wenn leer wird automatisch eines generiert beim Anker anlegen.
@@ -193,8 +193,9 @@
  * @apiParam {String} [additional_info] Addresszusatz
  * @apiParam {String} [phone] Mobil oder Telefonnummer für Rückfragen
  * @apiParam {String} [phone_code] Telefonnummer Vorwahl
- * @apiParam {String} [anchor_delivery_date] Ankerliefertermin als Tag im Format Y-m-d
- * @apiParam {String} [anchor_delivery_time] Ankerliefertermin als Uhrzeit im Format H:i:s
+ * @apiParam {String} [anchor_delivery_date] Anker-Liefertermin als Tag im Format Y-m-d
+ * @apiParam {String} [anchor_delivery_time] Anker-Liefertermin als Uhrzeit im Format H:i:s
+ * @apiParam {String} [anchor_delivery_time_max] Maximaler Anker-Liefertermin als Uhrzeit im Format H:i:s
  *
  * @apiSuccess (Success 204) {Object[]} Customer wie in /customer/item/:customer_nr beschrieben
  *
@@ -202,6 +203,7 @@
  * @apiError anchor_delivery_time Uhrzeit falsch formartiert
  * @apiError country Das Land ist unbekannt
  * @apiError last_name Kein Nachname angegeben
+ * @apiError email Keine validate E-Mail-Adresse
  *
  */
 
