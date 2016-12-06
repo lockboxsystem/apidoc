@@ -355,7 +355,7 @@
  * @api {post} /delivery/item Sendung anlegen
  * @apiName AddDeliveryById
  * @apiGroup Delivery
- * @apiVersion 1.0.0
+ * @apiVersion 1.0.4
  * @apiPermission apikey
  * @apiDescription Eine neue Sendung wird im System angelegt. Das angeben einer Empfänger-Adresse ist optional wenn eine Ankernummer angegeben wurde. Für Lieferungen an nicht Lockbox-Kunden mit Anker muss die vollständige Adresse gesendet werden. 
  * Der Absender der Sendung wird über den API-Key automatisch ermittelt. Aufruf gibt Fehlermeldungen wenn die Erstellung der Sendung nicht erfolgreich war.
@@ -378,8 +378,14 @@
  * @apiParam {String} [to_phone] Mobil oder Telefonnummer für Rückfragen
  * @apiParam {String} [to_email] Wenn eine Ankernummer gegeben aber unbekannt ist wird ein neuer Kunde angelegt. In diesem Fall werden to_first_name, to_last_name, to_street, to_streetnumber, to_zip_code, to_city, to_country und to_email zum Plfichtfeld.
  * @apiParam {Number} [reference] Referenz Nummer aus dem eigenen System. Auch als String möglich. Wird auf dem Label abgebildet als Barcode bei numerischen Werten oder die ersten 20-Zeichen bei Text.
+ * @apiParam {Number} [delivery_repacked] Wurde die Sendung umgepackt, 0 oder 1.
+ * @apiParam {String} [external_tracking_nr] Wenn eine externe Sendungsverfolgungsnummer existiert.
  * @apiParam {Date} [date_start] Ab welchem Datum die Sendung abgeholt werden kann. Dies erlaubt es Sendungen in der Zukunft zu erstellen um das Label im internen Prozess zu verwenden. In der Form Y-m-d. Ohne vorgegebenes Datum wird die Sendung als sofort verfügbar erstellt.
- * @apiParam {Time} [delivery_time] Gewünschte Zustellung zur genannten Uhrzeit. Zeitraum +2 Stunden. Gilt nur für Empfänger ohne Lockbox-Anker. In der Form H:i:s. Dieses Feld wird Pflicht wenn keine Ankernummer angegeben wurde.
+ * @apiParam {Time} [delivery_time] Gewünschte Zustellung zur genannten Uhrzeit. Zeitraum +2 Stunden. In der Form H:i:s. Dieses Feld wird Pflicht wenn keine Ankernummer angegeben wurde.
+ * @apiParam {Time} [delivery_time_max] Maximale Uhrzeit der Zustellung.
+ * @apiParam {Object[]} [products] Produkte die in der Sendung enthalten sind
+ * @apiParam {String} [procuts.article_nr] Externe Artikelnummer
+ * @apiParam {String} [procuts.article_title] Externer Artikelname
  *
  * @apiSuccess (Success 204) {Object[]} Delivery wie in /delivery/item/:id beschrieben
  *
