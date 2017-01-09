@@ -41,7 +41,7 @@
  * @api {get} /customer/anchor/:anchor_nr Ankernummer abfragen
  * @apiName GetCustomerByAnchor
  * @apiGroup Customer
- * @apiVersion 1.0.0
+ * @apiVersion 1.0.5
  * @apiPermission apikey
  * @apiDescription Gibt Informationen zu einem bei Lockbox registrierten Kunden aus.
  *
@@ -61,8 +61,13 @@
  * @apiSuccess {Number} Customer.zip_code Postleitzahl
  * @apiSuccess {String} Customer.city Stadt
  * @apiSuccess {String} Customer.country Land, ISO 3166-1 alpha-2 code
+ * @apiSuccess {String} Customer.birthday Geburstag
+ * @apiSuccess {String} Customer.phone_code Mobilnummer (nur Vorwahl)
  * @apiSuccess {String} Customer.phone Mobilnummer
+ * @apiSuccess {Number} Customer.floor Etage
+ * @apiSuccess {Boolean} Customer.is_lift_available Fahrstuhl vorhanden
  * @apiSuccess {String} Customer.email E-Mail-Adresse
+ * @apiSuccess {DateTime} Customer.created Datum erstellt
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -108,7 +113,7 @@
  * @api {get} /customer/item/:customer_nr Kunden abfragen
  * @apiName GetCustomer
  * @apiGroup Customer
- * @apiVersion 1.0.2
+ * @apiVersion 1.0.5
  * @apiPermission apikey
  * @apiDescription Gibt Informationen zu einem bei Lockbox registrierten Kunden aus.
  *
@@ -128,8 +133,13 @@
  * @apiSuccess {Number} Customer.zip_code Postleitzahl
  * @apiSuccess {String} Customer.city Stadt
  * @apiSuccess {String} Customer.country Land, ISO 3166-1 alpha-2 code
+ * @apiSuccess {String} Customer.birthday Geburstag
+ * @apiSuccess {String} Customer.phone_code Mobilnummer (nur Vorwahl)
  * @apiSuccess {String} Customer.phone Mobilnummer
+ * @apiSuccess {Number} Customer.floor Etage
+ * @apiSuccess {Boolean} Customer.is_lift_available Fahrstuhl vorhanden
  * @apiSuccess {String} Customer.email E-Mail-Adresse
+ * @apiSuccess {DateTime} Customer.created Datum erstellt
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -173,7 +183,7 @@
  * @api {post} /customer/item Kunden anlegen
  * @apiName AddCustomer
  * @apiGroup Customer
- * @apiVersion 1.0.3
+ * @apiVersion 1.0.5
  * @apiPermission apikey
  * @apiDescription Erstellt einen neuen Endkunden im System. Wenn die E-Mail-Adresse bereits im System registriert ist, wird der Kunde ohne Veränderung zurückgegeben.
  *
@@ -193,6 +203,8 @@
  * @apiParam {String} [additional_info] Addresszusatz
  * @apiParam {String} [phone] Mobil oder Telefonnummer für Rückfragen
  * @apiParam {String} [phone_code] Telefonnummer Vorwahl
+ * @apiParam {Number} [floor] Etage
+ * @apiParam {Boolean} [is_lift_available] Fahrstuhl vorhanden
  * @apiParam {String} [anchor_delivery_date] Anker-Liefertermin als Tag im Format Y-m-d
  * @apiParam {String} [anchor_delivery_time] Anker-Liefertermin als Uhrzeit im Format H:i:s
  * @apiParam {String} [anchor_delivery_time_max] Maximaler Anker-Liefertermin als Uhrzeit im Format H:i:s
@@ -224,7 +236,7 @@
  * @api {get} /delivery/item/:id Sendung abfragen
  * @apiName GetDeliveryById
  * @apiGroup Delivery
- * @apiVersion 1.0.2
+ * @apiVersion 1.0.5
  * @apiPermission apikey
  * @apiDescription Zu einer Sendung werden alle Informationen zurückgegeben. Dort sind die wichtigsten
  * Tracking Events vorhanden.
@@ -257,6 +269,8 @@
  * @apiSuccess {String} Delivery.to_country
  * @apiSuccess {String} Delivery.to_phone
  * @apiSuccess {String} Delivery.to_email
+ * @apiSuccess {Boolean} Delivery.to_lift_available
+ * @apiSuccess {Number} Delivery.to_floor
  * @apiSuccess {String} Delivery.from_company
  * @apiSuccess {String} Delivery.from_foa
  * @apiSuccess {String} Delivery.from_salutation
@@ -270,8 +284,11 @@
  * @apiSuccess {String} Delivery.from_country
  * @apiSuccess {String} Delivery.from_phone
  * @apiSuccess {String} Delivery.from_email
+ * @apiSuccess {Boolean} Delivery.from_lift_available
+ * @apiSuccess {Number} Delivery.from_floor
  * @apiSuccess {Date} Delivery.date_start Datum an welchem die Sendung zur Auslieferung bereit ist.
  * @apiSuccess {Time} Delivery.delivery_time Zustell-Zeitfenster
+ * @apiSuccess {Number} Delivery.payment_price_to_pay Nachnahmekosten
  * @apiSuccess {Object[]} Delivery.tracking_events
  * @apiSuccess {string} Delivery.tracking_events.status Status
  * @apiSuccess {string} Delivery.tracking_events.details Beschreibung
@@ -355,14 +372,12 @@
  * @api {post} /delivery/item Sendung anlegen
  * @apiName AddDeliveryById
  * @apiGroup Delivery
- * @apiVersion 1.0.4
+ * @apiVersion 1.0.5
  * @apiPermission apikey
  * @apiDescription Eine neue Sendung wird im System angelegt. Das angeben einer Empfänger-Adresse ist optional wenn eine Ankernummer angegeben wurde. Für Lieferungen an nicht Lockbox-Kunden mit Anker muss die vollständige Adresse gesendet werden. 
  * Der Absender der Sendung wird über den API-Key automatisch ermittelt. Aufruf gibt Fehlermeldungen wenn die Erstellung der Sendung nicht erfolgreich war.
  * Bei erfolgreichem Anlegen einer Sendung wird das Delivery Obejct wie oben beschrieben zurückgegeben.
  *
- * @apiParam {Object[]} [boxes] Verwendeten Boxen, Boxen können aktuell nur über das LTS zu einer Sendung später hinzugefügt werden.
- * @apiParam {String} [boxes.type] Box Type (z.B.: m,l,xl,thermo)
  * @apiParam {String} [anchor_nr] Ankernummer in der Form a123, A123 oder A00123
  * @apiParam {String} [to_foa] Anrede, "female" = Frau, "male" = Herr oder leer
  * @apiParam {String} [to_salutation] Titel
@@ -377,12 +392,17 @@
  * @apiParam {String} [to_additional_info] Addresszusatz
  * @apiParam {String} [to_phone] Mobil oder Telefonnummer für Rückfragen
  * @apiParam {String} [to_email] Wenn eine Ankernummer gegeben aber unbekannt ist wird ein neuer Kunde angelegt. In diesem Fall werden to_first_name, to_last_name, to_street, to_streetnumber, to_zip_code, to_city, to_country und to_email zum Plfichtfeld.
+ * @apiParam {Boolean} [to_lift_available] Fahrstuhl vorhanden
+ * @apiParam {Number} [to_floor] Etage
  * @apiParam {Number} [reference] Referenz Nummer aus dem eigenen System. Auch als String möglich. Wird auf dem Label abgebildet als Barcode bei numerischen Werten oder die ersten 20-Zeichen bei Text.
  * @apiParam {Number} [delivery_repacked] Wurde die Sendung umgepackt, 0 oder 1.
  * @apiParam {String} [external_tracking_nr] Wenn eine externe Sendungsverfolgungsnummer existiert.
  * @apiParam {Date} [date_start] Ab welchem Datum die Sendung abgeholt werden kann. Dies erlaubt es Sendungen in der Zukunft zu erstellen um das Label im internen Prozess zu verwenden. In der Form Y-m-d. Ohne vorgegebenes Datum wird die Sendung als sofort verfügbar erstellt.
  * @apiParam {Time} [delivery_time] Gewünschte Zustellung zur genannten Uhrzeit. Zeitraum +2 Stunden. In der Form H:i:s. Dieses Feld wird Pflicht wenn keine Ankernummer angegeben wurde.
  * @apiParam {Time} [delivery_time_max] Maximale Uhrzeit der Zustellung.
+ * @apiParam {Number} [payment_price_to_pay] Nachnahmekosten in Euro als Float
+ * @apiParam {Object[]} [boxes] Verwendeten Boxen, Boxen können aktuell nur über das LTS zu einer Sendung später hinzugefügt werden.
+ * @apiParam {String} [boxes.type] Box Type (z.B.: none, bottle, s, m ,l, xl,thermo)
  * @apiParam {Object[]} [products] Produkte die in der Sendung enthalten sind
  * @apiParam {String} [procuts.article_nr] Externe Artikelnummer
  * @apiParam {String} [procuts.article_title] Externer Artikelname
